@@ -12,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 Himma Test.postman_collection.json
+docs/
+refrence/
 
 # IntelliJ related
 *.iml
