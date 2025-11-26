@@ -105,7 +105,7 @@ class SpecialAbilitiesJobCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: AppConstants.paddingMedium),
+              const SizedBox(height: AppConstants.paddingSmall),
               // Job title
               Text(
                 job.jobTitle,
@@ -132,7 +132,7 @@ class SpecialAbilitiesJobCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-              const SizedBox(height: AppConstants.paddingMedium),
+              const SizedBox(height: AppConstants.paddingSmall),
               // Company name
               if (job.companyName != null)
                 Text(
@@ -148,7 +148,7 @@ class SpecialAbilitiesJobCard extends StatelessWidget {
               // Location
               if (job.officeLocation != null)
                 Text(
-                  job.officeLocation!,
+                  job.officeLocation!.split(' – ').last.trim() + '  ●  ' + job.officeLocation!.split(' – ').first.trim(),
                   style: const TextStyle(
                     fontSize: 14,
                     fontFamily: 'DM Sans',
@@ -158,14 +158,13 @@ class SpecialAbilitiesJobCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              const SizedBox(height: AppConstants.paddingMedium),
+              const SizedBox(height: AppConstants.paddingSmall),
               // Job details badges
               Wrap(
                 spacing: 5,
                 runSpacing: 5,
                 children: [
-                  if (job.minSalary != null || job.maxSalary != null)
-                    _buildInfoBadge(_formatSalary()),
+                  _buildInfoBadge(_formatSalary()),
                   if (job.jobType != null) _buildInfoBadge(job.jobType!),
                   if (job.locationPriority != null)
                     _buildInfoBadge(job.locationPriority!),
@@ -226,7 +225,7 @@ class SpecialAbilitiesJobCard extends StatelessWidget {
     if (job.maxSalary != null) {
       return 'Up to AED ${job.maxSalary}';
     }
-    return '';
+    return 'From AED 5000 / month';
   }
 }
 

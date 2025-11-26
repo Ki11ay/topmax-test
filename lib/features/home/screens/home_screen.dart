@@ -231,7 +231,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             },
                           ),
                           const SizedBox(height: AppConstants.paddingSmall),
-                          SizedBox( // Increased height for description
+                          SizedBox(
+                            height: 420, // Increased height for description and badges
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               padding: const EdgeInsets.symmetric(
@@ -282,7 +283,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ] else ...[
                           SizedBox(
-                            height: 280,
+                            height: 305,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               padding: const EdgeInsets.symmetric(

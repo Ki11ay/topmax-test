@@ -16,22 +16,25 @@ class FeaturedJobsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
-      margin: const EdgeInsets.only(right: AppConstants.paddingMedium),
-      child: InkWell(
-        onTap: () {
-          context.push('/job/${job.id}');
-        },
-        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-        child: Container(
+      width: 365,
+      margin: const EdgeInsets.only(right: AppConstants.paddingLarge),
+      decoration: BoxDecoration(
+        color: AppConstants.cardColor,
+        borderRadius: BorderRadius.circular(AppConstants.radiusExtraExtraLarge),
+        border: Border.all(color: const Color(0xFFCAC9C9), width: 1),
+      ),
+      child: Column(
+        children: [
+          Container(
+          margin: const EdgeInsets.all(AppConstants.paddingSmall),
+          padding: const EdgeInsets.all(AppConstants.paddingLarge),
           decoration: BoxDecoration(
-            color: const Color(0xFFFCE7F3), // Light pink background
+            // Rotate among three different background colors so that no two following cards have the same color
+            color: [const Color(0xFFFCE7F3), const Color.fromARGB(255, 230, 220, 104), const Color(0xFFBB5CA026), const Color(0xFFE3D7FF)][job.id % 4],
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
             border: Border.all(color: Colors.grey.shade200),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(AppConstants.paddingMedium),
-            child: Column(
+          child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -40,12 +43,11 @@ class FeaturedJobsCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 50,
-                      height: 50,
+                      width: 45,
+                      height: 45,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(AppConstants.radiusSmall),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFCAC9C9), width: 1),
                       ),
                       child: job.companyLogo != null
                           ? ClipRRect(
@@ -54,13 +56,6 @@ class FeaturedJobsCard extends StatelessWidget {
                               child: Image.network(
                                 job.companyLogo!,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(
-                                    Icons.business,
-                                    color: Color(0xFFDB2777),
-                                    size: 24,
-                                  );
-                                },
                               ),
                             )
                           : const Icon(
@@ -68,6 +63,30 @@ class FeaturedJobsCard extends StatelessWidget {
                               color: Color(0xFFDB2777),
                               size: 24,
                             ),
+                    ),
+                    const SizedBox(width: AppConstants.paddingSmall),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          job.companyName!,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'DM Sans',
+                            fontWeight: FontWeight.w600,
+                            color: AppConstants.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          job.officeLocation!.split(' – ').first.trim(),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'DM Sans',
+                            fontWeight: FontWeight.w400,
+                            color: AppConstants.textTertiary,
+                          ),
+                        ),
+                      ],
                     ),
                     const Spacer(),
                     IconButton(
@@ -91,80 +110,86 @@ class FeaturedJobsCard extends StatelessWidget {
                 // Job title
                 Text(
                   job.jobTitle,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 6),
-                
-                // Company name
-                if (job.companyName != null)
-                  Text(
-                    job.companyName!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppConstants.textSecondary,
-                          fontSize: 13,
-                        ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                const SizedBox(height: AppConstants.paddingSmall),
-                
-                // Job description
-                Text(
-                  job.jobDescription,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontSize: 12,
-                        color: AppConstants.textSecondary,
-                      ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: AppConstants.paddingMedium),
-                
-                // Job type and location badges
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    if (job.jobType != null)
-                      _buildBadge(job.jobType!, const Color(0xFFBFDBFE)),
-                    if (job.locationPriority != null)
-                      _buildBadge(job.locationPriority!, const Color(0xFFBFDBFE)),
-                  ],
-                ),
-                const SizedBox(height: AppConstants.paddingMedium),
-                
-                const Divider(height: 1),
-                const SizedBox(height: AppConstants.paddingSmall),
-                
-                // Salary range
-                Text(
-                  _formatSalary(),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
+                  style: const TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'DM Sans',
+                        fontWeight: FontWeight.w500,
+                        color: AppConstants.textPrimary,
                       ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
-                
-                // Details link
+                const SizedBox(height: 10),
+                // Job description
                 Text(
-                  'Details',
+                  job.jobDescription,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppConstants.primaryBlue,
-                        fontSize: 12,
+                        fontSize: 14,
+                        fontFamily: 'DM Sans',
+                        fontWeight: FontWeight.w400,
+                        color: AppConstants.textTertiary,
                       ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: AppConstants.paddingLarge),
+                // Job type and location badges
+                Wrap(
+                  spacing: 5,
+                  runSpacing: 0,
+                  children: [
+                    if (job.jobType != null)
+                      _buildBadge(job.jobType!, AppConstants.cardColor),
+                    if (job.locationPriority != null)
+                      _buildBadge(job.locationPriority!, AppConstants.cardColor),
+                  ],
                 ),
               ],
             ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge,),
+            child: Row(
+            children: [
+              Text(
+                _formatSalary(),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'DM Sans',
+                  fontWeight: FontWeight.w500,
+                  color: AppConstants.textPrimary,
+                ),
+              ),
+              Spacer(),
+              InkWell(
+              onTap: () {
+                context.push('/job/${job.id}');
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(color: AppConstants.jobSalaryBorderColor, width: 1),
+                  color: AppConstants.cardColor,
+                ),
+                child: Text(
+                  'Details',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontFamily: 'DM Sans',
+                    fontWeight: FontWeight.w500,
+                    color: AppConstants.textPrimary,
+                  ),
+                ),
+              ),
+            ),
+            ],
+          ),
+          ),
+        ],
       ),
     );
   }
@@ -172,19 +197,21 @@ class FeaturedJobsCard extends StatelessWidget {
   Widget _buildBadge(String label, Color backgroundColor) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 8,
-        vertical: 4,
+        horizontal: 15,
+        vertical: 10,
       ),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(100),
+        border: Border.all(color: AppConstants.jobSalaryBorderColor, width: 1),
       ),
       child: Text(
         label,
         style: const TextStyle(
-          fontSize: 11,
-          color: Color(0xFF1E40AF),
+          fontSize: 12,
+          fontFamily: 'DM Sans',
           fontWeight: FontWeight.w500,
+          color: AppConstants.textPrimary,
         ),
       ),
     );
@@ -203,7 +230,7 @@ class FeaturedJobsCard extends StatelessWidget {
     if (job.maxSalary != null) {
       return 'Up to AED ${job.maxSalary}';
     }
-    return 'Salary not specified';
+    return 'From AED 15000 / month';
   }
 }
 

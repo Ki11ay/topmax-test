@@ -116,19 +116,29 @@ class HomeNotifier extends StateNotifier<HomeState> {
       // Combine featured jobs arrays (featured_jobs + featured_jobs_for_you)
       final allFeaturedJobs = [...featuredJobsList, ...featuredJobsForYouList];
 
+      // TEMPORARY: Use recent jobs for all sections for design testing
+      // TODO: Remove this when API returns proper featured and disability jobs
+      final featuredToShow = allFeaturedJobs.isNotEmpty 
+          ? allFeaturedJobs 
+          : recentOpeningsList;
+      
+      final disabilityToShow = disabilityJobsList.isNotEmpty
+          ? disabilityJobsList
+          : recentOpeningsList;
+
       state = state.copyWith(
         isLoading: false,
-        featuredJobs: allFeaturedJobs,
+        featuredJobs: featuredToShow,
         recentOpenings: recentOpeningsList,
-        disabilityJobs: disabilityJobsList,
+        disabilityJobs: disabilityToShow,
         coursesForYou: coursesForYouList,
         // Reset pagination state
         featuredJobsPage: 1,
         disabilityJobsPage: 1,
         recentOpeningsPage: 1,
         // Assume more pages exist if we got data (will be verified on load more)
-        hasMoreFeaturedJobs: allFeaturedJobs.length >= 10,
-        hasMoreDisabilityJobs: disabilityJobsList.length >= 2,
+        hasMoreFeaturedJobs: featuredToShow.length >= 10,
+        hasMoreDisabilityJobs: disabilityToShow.length >= 2,
         hasMoreRecentOpenings: recentOpeningsList.length >= 10,
       );
     } catch (e) {

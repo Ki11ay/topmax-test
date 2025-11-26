@@ -116,8 +116,7 @@ class JobCard extends StatelessWidget {
                 spacing: 5,
                 // runSpacing: AppConstants.paddingSmall,
                 children: [
-                  if (job.minSalary != null || job.maxSalary != null)
-                    _buildInfoBadge(_formatSalary()),
+                  _buildInfoBadge(_formatSalary()),
                   if (job.jobType != null)
                     _buildInfoBadge(job.jobType!),
                   if (job.locationPriority != null)
@@ -180,7 +179,7 @@ class JobCard extends StatelessWidget {
     if (job.maxSalary != null) {
       return 'Up to AED ${job.maxSalary}';
     }
-    return '';
+    return 'From AED 15000 / month';
   }
 }
 
