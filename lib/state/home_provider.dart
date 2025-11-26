@@ -22,6 +22,10 @@ class HomeState {
   final bool hasMoreDisabilityJobs;
   final bool hasMoreFeaturedJobs;
   final bool hasMoreRecentOpenings;
+  
+  // State for showing recent jobs in empty sections
+  final bool showRecentInFeatured;
+  final bool showRecentInDisability;
 
   HomeState({
     this.isLoading = false,
@@ -37,6 +41,8 @@ class HomeState {
     this.hasMoreDisabilityJobs = true,
     this.hasMoreFeaturedJobs = true,
     this.hasMoreRecentOpenings = true,
+    this.showRecentInFeatured = false,
+    this.showRecentInDisability = false,
   });
 
   HomeState copyWith({
@@ -53,6 +59,8 @@ class HomeState {
     bool? hasMoreDisabilityJobs,
     bool? hasMoreFeaturedJobs,
     bool? hasMoreRecentOpenings,
+    bool? showRecentInFeatured,
+    bool? showRecentInDisability,
   }) {
     return HomeState(
       isLoading: isLoading ?? this.isLoading,
@@ -68,6 +76,8 @@ class HomeState {
       hasMoreDisabilityJobs: hasMoreDisabilityJobs ?? this.hasMoreDisabilityJobs,
       hasMoreFeaturedJobs: hasMoreFeaturedJobs ?? this.hasMoreFeaturedJobs,
       hasMoreRecentOpenings: hasMoreRecentOpenings ?? this.hasMoreRecentOpenings,
+      showRecentInFeatured: showRecentInFeatured ?? this.showRecentInFeatured,
+      showRecentInDisability: showRecentInDisability ?? this.showRecentInDisability,
     );
   }
 }
@@ -116,29 +126,19 @@ class HomeNotifier extends StateNotifier<HomeState> {
       // Combine featured jobs arrays (featured_jobs + featured_jobs_for_you)
       final allFeaturedJobs = [...featuredJobsList, ...featuredJobsForYouList];
 
-      // TEMPORARY: Use recent jobs for all sections for design testing
-      // TODO: Remove this when API returns proper featured and disability jobs
-      final featuredToShow = allFeaturedJobs.isNotEmpty 
-          ? allFeaturedJobs 
-          : recentOpeningsList;
-      
-      final disabilityToShow = disabilityJobsList.isNotEmpty
-          ? disabilityJobsList
-          : recentOpeningsList;
-
       state = state.copyWith(
         isLoading: false,
-        featuredJobs: featuredToShow,
+        featuredJobs: allFeaturedJobs,
         recentOpenings: recentOpeningsList,
-        disabilityJobs: disabilityToShow,
+        disabilityJobs: disabilityJobsList,
         coursesForYou: coursesForYouList,
         // Reset pagination state
         featuredJobsPage: 1,
         disabilityJobsPage: 1,
         recentOpeningsPage: 1,
         // Assume more pages exist if we got data (will be verified on load more)
-        hasMoreFeaturedJobs: featuredToShow.length >= 10,
-        hasMoreDisabilityJobs: disabilityToShow.length >= 2,
+        hasMoreFeaturedJobs: allFeaturedJobs.length >= 10,
+        hasMoreDisabilityJobs: disabilityJobsList.length >= 2,
         hasMoreRecentOpenings: recentOpeningsList.length >= 10,
       );
     } catch (e) {
@@ -272,6 +272,15 @@ class HomeNotifier extends StateNotifier<HomeState> {
       await _loadRecentOpenings(refresh: false);
       state = state.copyWith(isLoadingMore: false);
     }
+  }
+
+  // Toggle showing recent jobs in empty sections
+  void showRecentJobsInFeatured(bool show) {
+    state = state.copyWith(showRecentInFeatured: show);
+  }
+
+  void showRecentJobsInDisability(bool show) {
+    state = state.copyWith(showRecentInDisability: show);
   }
 
   Future<void> toggleSaveJob(int jobId, bool currentlySaved) async {

@@ -214,11 +214,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           'Jobs for Special Abilities',
                           onSeeAll: () {},
                         ),
-                        if (homeState.disabilityJobs.isEmpty) ...[
-                          _buildEmptyState(
+                        if (homeState.disabilityJobs.isEmpty && !homeState.showRecentInDisability) ...[
+                          _buildEmptyStateWithPrompt(
                             icon: Icons.accessibility_new,
-                            title: 'No Special Ability Jobs',
-                            message: 'Check back soon for opportunities tailored for you',
+                            title: 'No Special Ability Jobs Available',
+                            message: 'There are no special ability jobs at the moment.',
+                            promptMessage: 'Would you like to see other available jobs?',
+                            onAccept: () {
+                              ref.read(homeProvider.notifier).showRecentJobsInDisability(true);
+                            },
+                          ),
+                        ] else if (homeState.disabilityJobs.isEmpty && homeState.showRecentInDisability) ...[
+                          _buildFilterChips(
+                            ['All', 'Deaf', 'Blind'],
+                            _selectedDisabilityFilter,
+                            (filter) {
+                              setState(() {
+                                _selectedDisabilityFilter = filter;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: AppConstants.paddingSmall),
+                          SizedBox(
+                            height: 405,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: AppConstants.paddingMedium),
+                              itemCount: homeState.recentOpenings.length,
+                              itemBuilder: (context, index) {
+                                final job = homeState.recentOpenings[index];
+                                return SpecialAbilitiesJobCard(
+                                  job: job,
+                                  onSave: () {
+                                    ref
+                                        .read(homeProvider.notifier)
+                                        .toggleSaveJob(
+                                          job.id,
+                                          job.isSaved ?? false,
+                                        );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ] else ...[
                           _buildFilterChips(
@@ -232,7 +270,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           const SizedBox(height: AppConstants.paddingSmall),
                           SizedBox(
-                            height: 420, // Increased height for description and badges
+                            height: 405, // Increased height for description and badges
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               padding: const EdgeInsets.symmetric(
@@ -275,11 +313,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           'Featured Jobs',
                           onSeeAll: () {},
                         ),
-                        if (homeState.featuredJobs.isEmpty) ...[
-                          _buildEmptyState(
+                        if (homeState.featuredJobs.isEmpty && !homeState.showRecentInFeatured) ...[
+                          _buildEmptyStateWithPrompt(
                             icon: Icons.star_outline,
-                            title: 'No Featured Jobs Yet',
-                            message: 'Great opportunities will be featured here',
+                            title: 'No Featured Jobs Available',
+                            message: 'There are no featured jobs at the moment.',
+                            promptMessage: 'Would you like to see other available jobs?',
+                            onAccept: () {
+                              ref.read(homeProvider.notifier).showRecentJobsInFeatured(true);
+                            },
+                          ),
+                        ] else if (homeState.featuredJobs.isEmpty && homeState.showRecentInFeatured) ...[
+                          SizedBox(
+                            height: 305,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: AppConstants.paddingMedium),
+                              itemCount: homeState.recentOpenings.length,
+                              itemBuilder: (context, index) {
+                                final job = homeState.recentOpenings[index];
+                                return FeaturedJobsCard(
+                                  job: job,
+                                  onSave: () {
+                                    ref
+                                        .read(homeProvider.notifier)
+                                        .toggleSaveJob(
+                                          job.id,
+                                          job.isSaved ?? false,
+                                        );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ] else ...[
                           SizedBox(
@@ -490,10 +556,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }).toList();
   }
 
-  Widget _buildEmptyState({
+  Widget _buildEmptyStateWithPrompt({
     required IconData icon,
     required String title,
     required String message,
+    required String promptMessage,
+    required VoidCallback onAccept,
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(
@@ -545,6 +613,72 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppConstants.textSecondary,
                 ),
+          ),
+          const SizedBox(height: AppConstants.paddingMedium),
+          // Prompt question
+          Text(
+            promptMessage,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 15,
+              fontFamily: 'DM Sans',
+              fontWeight: FontWeight.w500,
+              color: AppConstants.textPrimary,
+            ),
+          ),
+          const SizedBox(height: AppConstants.paddingMedium),
+          // Action buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // No button
+              OutlinedButton(
+                onPressed: () {},
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: Colors.grey.shade300),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                ),
+                child: const Text(
+                  'No, thanks',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'DM Sans',
+                    fontWeight: FontWeight.w600,
+                    color: AppConstants.textSecondary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppConstants.paddingMedium),
+              // Yes button
+              ElevatedButton(
+                onPressed: onAccept,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppConstants.buttonBlue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                ),
+                child: const Text(
+                  'Yes, show me',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'DM Sans',
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
