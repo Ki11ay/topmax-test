@@ -99,6 +99,17 @@ class CoursesNotifier extends StateNotifier<CoursesState> {
       await loadCourses();
     } catch (e) {
       print('❌ Failed to save course: $e');
+      
+      // Check if it's a session expired error (401 or 500 with null user)
+      final errorString = e.toString();
+      if (errorString.contains('401') || 
+          (errorString.contains('500') && 
+           (errorString.contains('on null') || errorString.contains('Call to a member function')))) {
+        // Session expired - main.dart will handle this via SessionManager
+        // Don't set error state here to avoid duplicate snackbars
+        return;
+      }
+      
       state = state.copyWith(error: 'Failed to save course');
     }
   }

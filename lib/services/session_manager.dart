@@ -26,11 +26,16 @@ class SessionManager {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.info_outline, color: Colors.orange, size: 28),
-            SizedBox(width: 12),
-            Text('Session Expired'),
+            Image.asset(
+              'assets/icons/disconnected.png',
+              width: 28,
+              height: 28,
+              color: Colors.orange,
+            ),
+            const SizedBox(width: 12),
+            const Text('Session Expired'),
           ],
         ),
         content: Text(
@@ -61,7 +66,12 @@ class SessionManager {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.info_outline, color: Colors.white),
+            Image.asset(
+              'assets/icons/disconnected.png',
+              width: 24,
+              height: 24,
+              color: Colors.white,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(

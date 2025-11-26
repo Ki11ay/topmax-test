@@ -302,17 +302,18 @@ class HomeNotifier extends StateNotifier<HomeState> {
       String? errorType; // For special handling in UI
       
       if (errorString.contains('401')) {
-        // Token expired - need to re-login
-        errorMessage = '⏰ Session expired. Please login again';
-        errorType = 'session_expired';
+        // Token expired - main.dart will handle this via SessionManager
+        // Don't set error state here to avoid duplicate snackbars
+        return;
       } else if (errorString.contains('500') && 
           (errorString.contains('savedJobs() on null') || 
            errorString.contains('Call to a member function'))) {
         // Check if storage was cleared (session expired) or profile incomplete
         final token = await StorageService.getToken();
         if (token == null) {
-          errorMessage = '⏰ Session expired. Please login again';
-          errorType = 'session_expired';
+          // Session expired - main.dart will handle this via SessionManager
+          // Don't set error state here to avoid duplicate snackbars
+          return;
         } else {
           errorMessage = '🔒 Complete your profile first\n'
                         'Go to More → Profile to add your details';

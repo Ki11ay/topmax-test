@@ -210,16 +210,16 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
           child: Stack(
             children: [
               Positioned(
-                top: 68,
+                top: MediaQuery.of(context).size.height * 0.05,
                 left: 0,
                 child: Image.asset(
                   'assets/icons/create2.png',
-                  height: 571,
-                  width: 440,
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  width: MediaQuery.of(context).size.width * 0.94,
                 ),
               ),
               Positioned(
-                top: 533,
+                top: MediaQuery.of(context).size.height * 0.55,
                 left: 0,
                 child: VerifyAccountCard(
                   phone: widget.phone,

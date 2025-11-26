@@ -61,9 +61,10 @@ class ApiService {
           if (error.response?.statusCode == 401) {
             print('🔒 Unauthorized - Token expired or invalid');
             await StorageService.clearAll();
-            SessionManager().notifySessionExpired(
-              'Your session has expired. Please log in again to continue.'
-            );
+            
+            // Provide contextual message based on what action failed
+            String message = _getSessionExpiredMessage(error.requestOptions.path);
+            SessionManager().notifySessionExpired(message);
           }
           
           // Handle 500 errors that indicate null user (token expired but not caught as 401)
@@ -74,9 +75,10 @@ class ApiService {
                 errorData.contains('Call to a member function')) {
               print('🔒 Session expired - User is null on backend');
               await StorageService.clearAll();
-              SessionManager().notifySessionExpired(
-                'Your session has expired. Please log in again to continue.'
-              );
+              
+              // Provide contextual message based on what action failed
+              String message = _getSessionExpiredMessage(error.requestOptions.path);
+              SessionManager().notifySessionExpired(message);
             }
           }
           
@@ -87,6 +89,21 @@ class ApiService {
   }
 
   Dio get dio => _dio;
+
+  // Helper method to generate contextual session expired messages
+  String _getSessionExpiredMessage(String path) {
+    if (path.contains('toggle-save') || path.contains('/save')) {
+      return 'Failed to save. Your session has expired. Please log in again.';
+    } else if (path.contains('saved-items')) {
+      return 'Failed to load saved items. Your session has expired. Please log in again.';
+    } else if (path.contains('job')) {
+      return 'Failed to load job details. Your session has expired. Please log in again.';
+    } else if (path.contains('course')) {
+      return 'Failed to load course details. Your session has expired. Please log in again.';
+    } else {
+      return 'Your session has expired. Please log in again to continue.';
+    }
+  }
 
   // GET request
   Future<Response> get(

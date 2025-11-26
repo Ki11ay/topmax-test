@@ -52,25 +52,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final homeState = ref.watch(homeProvider);
     
-    // Show error snackbar if there's an error
+    // Show error snackbar if there's an error (but NOT for session_expired - main.dart handles that)
     if (homeState.error != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final errorParts = homeState.error!.split(':');
         final errorType = errorParts.length > 1 ? errorParts[0] : '';
         final errorMessage = errorParts.length > 1 ? errorParts[1] : homeState.error!;
         
+        // Skip showing snackbar for session_expired - main.dart handles this
+        if (errorType == 'session_expired') {
+          ref.read(homeProvider.notifier).clearError();
+          return;
+        }
+        
         final isProfileError = errorType == 'profile_incomplete';
-        final isSessionExpired = errorType == 'session_expired';
         
         IconData icon;
         Color backgroundColor;
         String actionLabel;
         
-        if (isSessionExpired) {
-          icon = Icons.access_time;
-          backgroundColor = const Color(0xFFE74C3C); // Red for session expired
-          actionLabel = 'Login';
-        } else if (isProfileError) {
+        if (isProfileError) {
           icon = Icons.account_circle_outlined;
           backgroundColor = const Color(0xFFE67E22); // Orange for profile
           actionLabel = 'Go to Profile';
@@ -101,22 +102,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               label: actionLabel,
               textColor: Colors.white,
               onPressed: () {
-                ref.read(homeProvider.notifier).clearError();
-                if (isSessionExpired) {
-                  context.go('/auth/phone'); // Navigate to login
-                } else if (isProfileError) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                if (isProfileError) {
                   context.go('/more'); // Navigate to profile
                 }
               },
             ),
           ),
         );
+        
+        // Clear error after showing
         ref.read(homeProvider.notifier).clearError();
       });
     }
 
     return Scaffold(
-      backgroundColor: AppConstants.cardColor,
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       body: homeState.isLoading
           ? const Center(child: CircularProgressIndicator())
           : homeState.error != null
@@ -306,7 +308,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       
                       // Main content
                       SliverToBoxAdapter(
-                        child: Column(
+                        child: Container(
+                          padding: const EdgeInsets.all(AppConstants.paddingMedium),
+                          decoration: BoxDecoration(
+                            color: AppConstants.cardColor,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30),
+                            ),
+                          ),
+                          child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Jobs for Special Abilities Section
@@ -538,6 +549,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                             const SizedBox(height: AppConstants.paddingLarge),
                           ],
+                        ),
                         ),
                       ),
                     ],

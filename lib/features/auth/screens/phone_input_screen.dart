@@ -59,27 +59,6 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
 
     final authNotifier = ref.read(authProvider.notifier);
     
-    // Show loading indicator
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Row(
-          children: [
-            SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            ),
-            SizedBox(width: 16),
-            Text('Sending OTP...'),
-          ],
-        ),
-        duration: Duration(seconds: 30),
-      ),
-    );
-
     final success = await authNotifier.requestOtp(
       phone: _phoneController.text,
       countryId: _selectedCountryId!,
@@ -87,22 +66,7 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
 
     if (!mounted) return;
 
-    // Hide loading indicator
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
     if (success) {
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✓ OTP sent successfully!'),
-          backgroundColor: AppConstants.successColor,
-          duration: Duration(seconds: 2),
-        ),
-      );
-      
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (!mounted) return;
-      
       Navigator.push(
         context,
         MaterialPageRoute(

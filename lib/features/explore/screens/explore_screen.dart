@@ -28,10 +28,15 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     
     print('🔍 Search Query: $query, Filter: $_selectedFilter');
     
+    // Note: The search API currently only supports searching jobs, not courses
+    // The filter dropdown doesn't affect the API call
+    // TODO: When courses search is supported, implement proper filtering
+    
     // Call the actual search API
     ref.read(searchProvider.notifier).search(
       keyword: query,
-      jobType: _selectedFilter == 'Jobs' ? null : 'course',
+      // Don't pass jobType - that parameter is for employment type (part-time/full-time)
+      // not content type (jobs/courses)
     );
   }
 
@@ -133,6 +138,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                                     setState(() {
                                       _selectedFilter = value;
                                     });
+                                    // Note: Currently the API only searches jobs
+                                    // The filter selection is stored but doesn't affect results yet
+                                    // TODO: Re-enable search trigger when courses search is supported
                                   },
                                   offset: const Offset(0, 45),
                                   shape: RoundedRectangleBorder(
@@ -430,33 +438,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFilterButton(String label) {
-    return OutlinedButton(
-      onPressed: () {
-        _searchController.text = label;
-        _performSearch();
-      },
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
-        ),
-        alignment: Alignment.centerLeft,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-        ),
-        side: BorderSide(color: Colors.grey.shade300),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: AppConstants.textPrimary,
-          fontSize: 15,
-        ),
       ),
     );
   }

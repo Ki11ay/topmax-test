@@ -46,7 +46,12 @@ class _MyAppState extends ConsumerState<MyApp> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.info_outline, color: Colors.white),
+            Image.asset(
+              'assets/icons/disconnected.png',
+              width: 24,
+              height: 24,
+              color: Colors.white,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
