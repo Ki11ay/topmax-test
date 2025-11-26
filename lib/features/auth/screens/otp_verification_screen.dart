@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../state/auth_provider.dart';
+import '../widgets/verify_account_card.dart';
 import '../widgets/otp_input_field.dart';
 
 class OtpVerificationScreen extends ConsumerStatefulWidget {
@@ -26,6 +27,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   int _resendTimer = 60;
   Timer? _timer;
   bool _canResend = false;
+  final OtpInputFieldController _otpController = OtpInputFieldController();
 
   @override
   void initState() {
@@ -116,11 +118,49 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       if (!mounted) return;
       context.go('/home');
     } else {
+      // Clear OTP fields
+      _otpController.clear();
+      setState(() {
+        _otp = '';
+      });
+      
       final error = ref.read(authProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error ?? 'Failed to verify OTP'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'Please re-enter the OTP',
+                style: TextStyle(fontSize: 13),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  '💡 Test Hint: Use OTP code 123456',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
           backgroundColor: AppConstants.errorColor,
+          duration: const Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }
@@ -161,77 +201,40 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verify OTP'),
-        centerTitle: true,
-      ),
+      backgroundColor: AppConstants.backgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(AppConstants.paddingLarge),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+          ),
+          child: Stack(
             children: [
-              const SizedBox(height: AppConstants.paddingLarge),
-              Text(
-                'Verification Code',
-                style: Theme.of(context).textTheme.displayLarge,
-                textAlign: TextAlign.center,
+              Positioned(
+                top: 68,
+                left: 0,
+                child: Image.asset(
+                  'assets/icons/create2.png',
+                  height: 571,
+                  width: 440,
+                ),
               ),
-              const SizedBox(height: AppConstants.paddingSmall),
-              Text(
-                'We have sent a verification code to',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppConstants.textSecondary,
-                    ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppConstants.paddingSmall),
-              Text(
-                widget.phone,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppConstants.paddingExtraLarge),
-              OtpInputField(
-                length: 6,
-                onCompleted: (otp) {
-                  setState(() {
-                    _otp = otp;
-                  });
-                },
-              ),
-              const SizedBox(height: AppConstants.paddingLarge),
-              ElevatedButton(
-                onPressed: authState.isLoading ? null : _verifyOtp,
-                child: authState.isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : const Text('Verify OTP'),
-              ),
-              const SizedBox(height: AppConstants.paddingMedium),
-              TextButton(
-                onPressed: _canResend && !authState.isLoading
-                    ? _resendOtp
-                    : null,
-                child: Text(
-                  _canResend
-                      ? "Didn't receive a code?"
-                      : "Resend code in $_resendTimer s",
-                  style: TextStyle(
-                    color: _canResend
-                        ? AppConstants.textPrimary
-                        : AppConstants.textSecondary,
-                    decoration: _canResend ? TextDecoration.underline : null,
-                  ),
+              Positioned(
+                top: 533,
+                left: 0,
+                child: VerifyAccountCard(
+                  phone: widget.phone,
+                  otp: _otp,
+                  isLoading: authState.isLoading,
+                  canResend: _canResend,
+                  resendTimer: _resendTimer,
+                  onOtpCompleted: (otp) {
+                    setState(() {
+                      _otp = otp;
+                    });
+                  },
+                  onVerifyOtp: _verifyOtp,
+                  onResendOtp: _resendOtp,
+                  otpController: _otpController,
                 ),
               ),
             ],

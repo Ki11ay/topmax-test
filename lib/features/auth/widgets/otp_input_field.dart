@@ -5,15 +5,33 @@ import '../../../core/constants/app_constants.dart';
 class OtpInputField extends StatefulWidget {
   final Function(String) onCompleted;
   final int length;
+  final OtpInputFieldController? controller;
 
   const OtpInputField({
     super.key,
     required this.onCompleted,
     this.length = 6,
+    this.controller,
   });
 
   @override
   State<OtpInputField> createState() => _OtpInputFieldState();
+}
+
+class OtpInputFieldController {
+  _OtpInputFieldState? _state;
+
+  void clear() {
+    _state?._clearFields();
+  }
+
+  void _attach(_OtpInputFieldState state) {
+    _state = state;
+  }
+
+  void _detach() {
+    _state = null;
+  }
 }
 
 class _OtpInputFieldState extends State<OtpInputField> {
@@ -23,6 +41,7 @@ class _OtpInputFieldState extends State<OtpInputField> {
   @override
   void initState() {
     super.initState();
+    widget.controller?._attach(this);
     _controllers = List.generate(
       widget.length,
       (index) => TextEditingController(),
@@ -35,6 +54,7 @@ class _OtpInputFieldState extends State<OtpInputField> {
 
   @override
   void dispose() {
+    widget.controller?._detach();
     for (var controller in _controllers) {
       controller.dispose();
     }
@@ -42,6 +62,15 @@ class _OtpInputFieldState extends State<OtpInputField> {
       node.dispose();
     }
     super.dispose();
+  }
+
+  void _clearFields() {
+    for (var controller in _controllers) {
+      controller.clear();
+    }
+    if (_focusNodes.isNotEmpty) {
+      _focusNodes[0].requestFocus();
+    }
   }
 
   void _onChanged(String value, int index) {
@@ -72,6 +101,7 @@ class _OtpInputFieldState extends State<OtpInputField> {
       children: List.generate(widget.length, (index) {
         return SizedBox(
           width: 50,
+          height: 50,
           child: RawKeyboardListener(
             focusNode: FocusNode(),
             onKey: (event) => _onKeyEvent(event, index),
@@ -82,21 +112,34 @@ class _OtpInputFieldState extends State<OtpInputField> {
               keyboardType: TextInputType.number,
               maxLength: 1,
               style: const TextStyle(
-                fontSize: AppConstants.fontSizeTitle,
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                height: 1.2,
+                fontWeight: FontWeight.w600,
+                color: AppConstants.buttonBlue,
+                fontFamily: 'DM Sans',
               ),
               decoration: InputDecoration(
                 counterText: '',
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 border: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(AppConstants.radiusMedium),
+                  borderRadius: BorderRadius.circular(100),
+                  borderSide: const BorderSide(
+                    color: AppConstants.buttonBlue,
+                    // width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(100),
+                  borderSide: const BorderSide(
+                    color: AppConstants.buttonBlue,
+                    // width: 1.5,
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(AppConstants.radiusMedium),
+                  borderRadius: BorderRadius.circular(100),
                   borderSide: const BorderSide(
-                    color: AppConstants.primaryBlue,
-                    width: 2,
+                    color: AppConstants.buttonBlue,
+                    width: 1,
                   ),
                 ),
               ),

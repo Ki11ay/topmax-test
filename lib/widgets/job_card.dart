@@ -16,19 +16,20 @@ class JobCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppConstants.paddingMedium),
+      margin: const EdgeInsets.only(bottom: AppConstants.paddingLarge),
+      // height: 261,
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F3FF), // Light purple background
-        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+        color: AppConstants.jobCardColor, // Light purple background
+        borderRadius: BorderRadius.circular(AppConstants.radiusExtraExtraLarge),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: InkWell(
         onTap: () {
           context.push('/job/${job.id}');
         },
-        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+        // borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
         child: Padding(
-          padding: const EdgeInsets.all(AppConstants.paddingMedium),
+          padding: const EdgeInsets.all(AppConstants.paddingLarge),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -37,31 +38,32 @@ class JobCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
+                    padding: const EdgeInsets.all(
+                      10,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE8DEF8), // Purple badge
-                      borderRadius: BorderRadius.circular(6),
+                      color: job.isUrgent == true ? AppConstants.urgentColor : job.isMultipleHires == true ? AppConstants.multipleHiresColor : AppConstants.newJobColor, // Purple badge
+                      borderRadius: BorderRadius.circular(100),
                     ),
-                    child: const Text(
-                      'New',
+                    child: Text(
+                      job.isUrgent == true ? 'Urgent'
+                       : job.isMultipleHires == true ? 'Hiring Multiple Candidates'
+                        : 'New',
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF6750A4),
+                        fontFamily: 'DM Sans',
+                        fontWeight: FontWeight.w500,
+                        color: AppConstants.textPrimary,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: Icon(
+                    icon: Image.asset(
+                      width: 20,
+                      height: 20,
                       job.isSaved == true
-                          ? Icons.bookmark
-                          : Icons.bookmark_border,
-                      color: job.isSaved == true
-                          ? AppConstants.primaryBlue
-                          : AppConstants.textSecondary,
+                          ? 'assets/icons/saved.png'
+                          : 'assets/icons/save.png',
                     ),
                     onPressed: onSave,
                     padding: EdgeInsets.zero,
@@ -74,49 +76,45 @@ class JobCard extends StatelessWidget {
               Text(
                 job.jobTitle,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: AppConstants.textPrimary,
+                      fontSize: 20,
+                      fontFamily: 'DM Sans',
                     ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: AppConstants.paddingSmall),
+              const SizedBox(height: AppConstants.paddingMedium),
               // Company name
               if (job.companyName != null)
                 Text(
                   job.companyName!,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  style: const TextStyle(
                         color: AppConstants.textSecondary,
+                        fontSize: 14,
+                        fontFamily: 'DM Sans',
+                        fontWeight: FontWeight.w600,
                       ),
                 ),
               const SizedBox(height: AppConstants.paddingSmall),
               // Location
               if (job.officeLocation != null)
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on_outlined,
-                      size: 16,
-                      color: AppConstants.textSecondary,
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        job.officeLocation!,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppConstants.textSecondary,
-                            ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                Text(
+                  job.officeLocation!,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'DM Sans',
+                    fontWeight: FontWeight.w400,
+                    color: AppConstants.textSecondary,
                       ),
-                    ),
-                  ],
+                  maxLines: 1,
+                  // overflow: TextOverflow.ellipsis,
                 ),
               const SizedBox(height: AppConstants.paddingMedium),
               // Job details badges
               Wrap(
-                spacing: AppConstants.paddingSmall,
-                runSpacing: AppConstants.paddingSmall,
+                spacing: 5,
+                // runSpacing: AppConstants.paddingSmall,
                 children: [
                   if (job.minSalary != null || job.maxSalary != null)
                     _buildInfoBadge(_formatSalary()),
@@ -126,14 +124,16 @@ class JobCard extends StatelessWidget {
                     _buildInfoBadge(job.locationPriority!),
                 ],
               ),
-              const SizedBox(height: AppConstants.paddingSmall),
+              const SizedBox(height: AppConstants.paddingMedium),
               // Active since
               if (job.activeSince != null || job.createdAt != null)
                 Text(
                   job.activeSince ?? 'Active recently',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppConstants.textSecondary,
-                        fontSize: 11,
+                  style: const TextStyle(
+                        color: AppConstants.textTertiary,
+                        fontSize: 12,
+                        fontFamily: 'DM Sans',
+                        fontWeight: FontWeight.w400,
                       ),
                 ),
             ],
@@ -146,17 +146,20 @@ class JobCard extends StatelessWidget {
   Widget _buildInfoBadge(String label) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
+        horizontal: 15,
+        vertical: 10,
       ),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(100),
+        border: Border.all(color: AppConstants.jobSalaryBorderColor, width: 1),
       ),
       child: Text(
         label,
         style: const TextStyle(
           fontSize: 12,
+          fontFamily: 'DM Sans',
+          fontWeight: FontWeight.w500,
           color: AppConstants.textPrimary,
         ),
       ),

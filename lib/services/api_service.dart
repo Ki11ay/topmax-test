@@ -56,11 +56,24 @@ class ApiService {
             print('📛 Error Data: ${error.response?.data}');
           }
           
-          // Handle 401 errors (unauthorized)
+          // Handle 401 errors (unauthorized) or token expiration
           if (error.response?.statusCode == 401) {
-            print('🔒 Unauthorized - Clearing storage');
+            print('🔒 Unauthorized - Token expired or invalid');
             await StorageService.clearAll();
+            // Note: Navigation will be handled by router guard
           }
+          
+          // Handle 500 errors that indicate null user (token expired but not caught as 401)
+          if (error.response?.statusCode == 500 &&
+              error.response?.data != null) {
+            final errorData = error.response!.data.toString();
+            if (errorData.contains('on null') || 
+                errorData.contains('Call to a member function')) {
+              print('🔒 Session expired - User is null on backend');
+              await StorageService.clearAll();
+            }
+          }
+          
           return handler.next(error);
         },
       ),

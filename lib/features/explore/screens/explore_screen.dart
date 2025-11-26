@@ -37,88 +37,229 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final searchState = ref.watch(searchProvider);
+    final hasSearchResults = searchState.query != null && searchState.query!.isNotEmpty;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFE3F2FD), // Light blue background
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Search bar
-            Padding(
-              padding: const EdgeInsets.all(AppConstants.paddingMedium),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search for jobs and courses',
-                        prefixIcon: const Icon(Icons.search),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide.none,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: AppConstants.sliverAppBarGradient,
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              // SliverAppBar with search bar
+              SliverAppBar(
+                expandedHeight: hasSearchResults ? 178 : 148,
+                floating: false,
+                pinned: true,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Column(
+                    children: [
+                      // Search bar
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 68),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(100),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                child: Icon(
+                                  Icons.search,
+                                  size: 20,
+                                ),
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Search for jobs and courses',
+                                    hintStyle: TextStyle(
+                                      color: AppConstants.textSecondary,
+                                      fontSize: 16,
+                                      fontFamily: 'DM Sans',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
+                                    errorBorder: InputBorder.none,
+                                    focusedErrorBorder: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    isDense: true,
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: AppConstants.textPrimary,
+                                  ),
+                                  cursorColor: AppConstants.primaryBlue,
+                                  onSubmitted: (_) => _performSearch(),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(right: 4),
+                                child: PopupMenuButton<String>(
+                                  initialValue: _selectedFilter,
+                                  onSelected: (value) {
+                                    setState(() {
+                                      _selectedFilter = value;
+                                    });
+                                  },
+                                  offset: const Offset(0, 45),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(30),
+                                      border: Border.all(color: Colors.grey.shade300),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          _selectedFilter,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        const Icon(
+                                          Icons.arrow_drop_down,
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  itemBuilder: (context) => [
+                                    const PopupMenuItem(
+                                      value: 'Jobs',
+                                      child: Text('Jobs'),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'Courses',
+                                      child: Text('Courses'),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'All',
+                                      child: Text('All'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      onSubmitted: (_) => _performSearch(),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  PopupMenuButton<String>(
-                    initialValue: _selectedFilter,
-                    onSelected: (value) {
-                      setState(() {
-                        _selectedFilter = value;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(_selectedFilter),
-                          const Icon(Icons.arrow_drop_down),
-                        ],
-                      ),
-                    ),
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(value: 'Jobs', child: Text('Jobs')),
-                      const PopupMenuItem(value: 'Courses', child: Text('Courses')),
-                      const PopupMenuItem(value: 'All', child: Text('All')),
+                      
+                      // Filter chips (only show when there are search results)
+                      if (hasSearchResults) ...[
+                        const SizedBox(height: 8),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.paddingMedium,
+                          ),
+                          child: Row(
+                            children: [
+                              _buildFilterChip('Easy Apply', false),
+                              const SizedBox(width: 8),
+                              _buildFilterChip('Location', true),
+                              const SizedBox(width: 8),
+                              _buildFilterChip('Date Posted', true),
+                              const SizedBox(width: 8),
+                              _buildFilterChip('Salary', true),
+                              const SizedBox(width: 8),
+                              _buildFilterChip('Experience', false),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
-                ],
-              ),
-            ),
-            
-            // Content
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(AppConstants.paddingLarge),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
                 ),
-                child: _buildContent(),
               ),
-            ),
-          ],
+              
+              // Content as Sliver
+              SliverFillRemaining(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(AppConstants.paddingLarge),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
+                    ),
+                  ),
+                  child: _buildContent(),
+                ),
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, bool hasCloseIcon) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: hasCloseIcon ? 12 : 16,
+        vertical: 8,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontFamily: 'DM Sans',
+              fontWeight: FontWeight.w500,
+              color: AppConstants.textSecondary,
+            ),
+          ),
+          if (hasCloseIcon) ...[
+            const SizedBox(width: 4),
+              Image.asset(
+                'assets/icons/envelope.png',
+                width: 10,
+                height: 10,
+              ),
+          ],
+        ],
       ),
     );
   }
@@ -154,26 +295,26 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Search Results (${searchState.jobs.length})',
-                style: Theme.of(context).textTheme.displayMedium,
-              ),
-              TextButton(
-                onPressed: () {
-                  ref.read(searchProvider.notifier).clearSearch();
-                  _searchController.clear();
-                },
-                child: const Text('Clear'),
-              ),
-            ],
+          Text(
+            'Results: ${searchState.jobs.length}',
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppConstants.textSecondary,
+              fontWeight: FontWeight.w400,
+            ),
           ),
           const SizedBox(height: AppConstants.paddingMedium),
           Expanded(
             child: searchState.jobs.isEmpty
-                ? const Center(child: Text('No results found'))
+                ? const Center(
+                    child: Text(
+                      'No results found',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppConstants.textSecondary,
+                      ),
+                    ),
+                  )
                 : ListView.builder(
                     itemCount: searchState.jobs.length,
                     itemBuilder: (context, index) {
