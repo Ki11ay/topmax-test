@@ -51,16 +51,16 @@ class CustomBottomNav extends StatelessWidget {
             children: [
               _buildNavItem(
                 context: context,
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home,
+                icon: Image.asset('assets/icons/home2.png', width: 20, height: 20),
+                activeIcon: Image.asset('assets/icons/home3.png', width: 20, height: 20),
                 label: 'Home',
                 index: 0,
                 isActive: currentIndex == 0,
               ),
               _buildNavItem(
                 context: context,
-                icon: Icons.explore_outlined,
-                activeIcon: Icons.explore,
+                icon: Image.asset('assets/icons/search2.png', width: 20, height: 20),
+                activeIcon: Image.asset('assets/icons/search3.png', width: 20, height: 20),
                 label: 'Explore',
                 index: 1,
                 isActive: currentIndex == 1,
@@ -76,8 +76,8 @@ class CustomBottomNav extends StatelessWidget {
               ),
               _buildNavItem(
                 context: context,
-                icon: Icons.menu,
-                activeIcon: Icons.menu,
+                icon: Image.asset('assets/icons/more.png', width: 20, height: 20),
+                activeIcon: Image.asset('assets/icons/more.png', width: 20, height: 20),
                 label: 'More',
                 index: 4,
                 isActive: currentIndex == 4,
@@ -91,25 +91,37 @@ class CustomBottomNav extends StatelessWidget {
 
   Widget _buildNavItem({
     required BuildContext context,
-    required IconData icon,
-    required IconData activeIcon,
+    required dynamic icon,
+    required dynamic activeIcon,
     required String label,
     required int index,
     required bool isActive,
   }) {
+    final iconWidget = isActive ? activeIcon : icon;
+    
     return Expanded(
       child: InkWell(
         onTap: () => onTap(index),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isActive ? activeIcon : icon,
-              color: isActive
-                  ? AppConstants.primaryBlue
-                  : AppConstants.textSecondary,
-              size: AppConstants.iconSizeMedium,
-            ),
+            iconWidget is IconData
+                ? Icon(
+                    iconWidget,
+                    color: isActive
+                        ? AppConstants.primaryBlue
+                        : AppConstants.textSecondary,
+                    size: AppConstants.iconSizeMedium,
+                  )
+                : ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      isActive
+                          ? AppConstants.primaryBlue
+                          : AppConstants.textSecondary,
+                      BlendMode.srcIn,
+                    ),
+                    child: iconWidget,
+                  ),
             const SizedBox(height: 4),
             Text(
               label,
@@ -131,32 +143,41 @@ class CustomBottomNav extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: () => _showPostJobDialog(context),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
+        child: Container(
               padding: const EdgeInsets.all(AppConstants.paddingSmall),
               decoration: BoxDecoration(
-                color: AppConstants.primaryBlue,
+                gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    Color(0xFF3170CE),
+                    Color(0xFF31B2CE),
+                  ],
+                ),
                 borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
               ),
-              child: const Icon(
-                Icons.work_outline,
-                color: Colors.white,
-                size: AppConstants.iconSizeMedium,
-              ),
+              child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/icons/postjob.png',
+                  width: 20,
+                  height: 20,
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Post Job',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: AppConstants.cardColor,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'DM Sans',
+                    
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            const Text(
-              'Post Job',
-              style: TextStyle(
-                fontSize: AppConstants.fontSizeSmall,
-                color: AppConstants.primaryBlue,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+          ),
       ),
     );
   }

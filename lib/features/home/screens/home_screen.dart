@@ -162,13 +162,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         snap: true,
                         pinned: true,
                         expandedHeight: 260.0,
+                        toolbarHeight: 70,
                         backgroundColor: Colors.transparent,
                         elevation: 0,
                         flexibleSpace: LayoutBuilder(
                           builder: (BuildContext context, BoxConstraints constraints) {
                             // Calculate the collapse ratio (0.0 = fully expanded, 1.0 = fully collapsed)
                             final double collapseRatio = 
-                                ((constraints.maxHeight - 260.0) / (kToolbarHeight - 260.0))
+                                ((constraints.maxHeight - 260.0) / (70 - 260.0))
                                     .clamp(0.0, 1.0);
                             final bool isCollapsed = collapseRatio > 0.5;
                             
@@ -180,10 +181,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 child: SafeArea(
                                   child: Padding(
                                     padding: const EdgeInsets.all(AppConstants.paddingMedium),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
+                                    child: SingleChildScrollView(
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
                                       // Logo and notification icon - always visible
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -296,11 +299,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           ),
                                         ),
                                       ],
-                                    ],
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
                             );
                           },
                         ),
@@ -309,7 +313,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       // Main content
                       SliverToBoxAdapter(
                         child: Container(
-                          padding: const EdgeInsets.all(AppConstants.paddingMedium),
+                          padding: const EdgeInsets.only(top: AppConstants.paddingMedium),
                           decoration: BoxDecoration(
                             color: AppConstants.cardColor,
                             borderRadius: BorderRadius.only(

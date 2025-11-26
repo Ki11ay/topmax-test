@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../widgets/job_card.dart';
 import '../../../widgets/course_card.dart';
 import '../../../state/saved_items_provider.dart';
+import '../../../state/auth_provider.dart';
 
 class SavedItemsScreen extends ConsumerStatefulWidget {
   const SavedItemsScreen({super.key});
@@ -114,24 +116,10 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen>
           ),
         ),
       ),
-      body: savedItemsState.isLoading
+      body: savedItemsState.isLoading && !savedItemsState.jobsLoaded && !savedItemsState.coursesLoaded
           ? const Center(child: CircularProgressIndicator())
           : savedItemsState.error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Error: ${savedItemsState.error}'),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          ref.read(savedItemsProvider.notifier).loadAll();
-                        },
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                )
+              ? _buildErrorState(savedItemsState.error!)
               : TabBarView(
                   controller: _tabController,
                   children: [
@@ -146,15 +134,45 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen>
 
   Widget _buildJobsList(List jobs) {
     if (jobs.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.bookmark_border, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: AppConstants.unselectedTabColor,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.bookmark_border,
+                size: 56,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
               'No saved jobs yet',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppConstants.textPrimary,
+                fontFamily: 'DM Sans',
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 40),
+              child: Text(
+                'Start exploring and save jobs to see them here',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                  fontFamily: 'DM Sans',
+                ),
+              ),
             ),
           ],
         ),
@@ -178,15 +196,45 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen>
 
   Widget _buildCoursesList(List courses) {
     if (courses.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.bookmark_border, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: AppConstants.unselectedTabColor,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.bookmark_border,
+                size: 56,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
               'No saved courses yet',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppConstants.textPrimary,
+                fontFamily: 'DM Sans',
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 40),
+              child: Text(
+                'Start exploring and save courses to see them here',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                  fontFamily: 'DM Sans',
+                ),
+              ),
             ),
           ],
         ),
@@ -206,6 +254,172 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen>
         },
       ),
     );
+  }
+
+  Widget _buildErrorState(SavedItemsError error) {
+    IconData errorIcon;
+    Color errorColor;
+    String buttonText;
+    VoidCallback onButtonPressed;
+
+    switch (error.type) {
+      case SavedItemsErrorType.unauthorized:
+        errorIcon = Icons.lock_outline;
+        errorColor = Colors.orange;
+        buttonText = 'Log In Again';
+        onButtonPressed = () async {
+          // Clear auth state and navigate to login
+          await ref.read(authProvider.notifier).logout();
+          if (mounted) {
+            context.go('/auth/phone');
+          }
+        };
+        break;
+      case SavedItemsErrorType.network:
+        errorIcon = Icons.wifi_off_outlined;
+        errorColor = Colors.red;
+        buttonText = 'Retry';
+        onButtonPressed = () {
+          ref.read(savedItemsProvider.notifier).loadAll();
+        };
+        break;
+      case SavedItemsErrorType.server:
+        errorIcon = Icons.cloud_off_outlined;
+        errorColor = Colors.purple;
+        buttonText = 'Try Again';
+        onButtonPressed = () {
+          ref.read(savedItemsProvider.notifier).loadAll();
+        };
+        break;
+      case SavedItemsErrorType.unknown:
+        errorIcon = Icons.error_outline;
+        errorColor = Colors.grey;
+        buttonText = 'Retry';
+        onButtonPressed = () {
+          ref.read(savedItemsProvider.notifier).loadAll();
+        };
+    }
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Error Icon
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: errorColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                errorIcon,
+                size: 56,
+                color: errorColor,
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // Error Title
+            Text(
+              _getErrorTitle(error.type),
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: AppConstants.textPrimary,
+                fontFamily: 'DM Sans',
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+
+            // Error Message
+            Text(
+              error.message,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+                fontFamily: 'DM Sans',
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+
+            // Action Button
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: onButtonPressed,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: errorColor,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      error.type == SavedItemsErrorType.unauthorized
+                          ? Icons.login
+                          : Icons.refresh,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      buttonText,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'DM Sans',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Secondary Action (Cancel/Back)
+            if (error.type == SavedItemsErrorType.unauthorized) ...[
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'Go Back',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey,
+                    fontFamily: 'DM Sans',
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getErrorTitle(SavedItemsErrorType type) {
+    switch (type) {
+      case SavedItemsErrorType.unauthorized:
+        return 'Session Expired';
+      case SavedItemsErrorType.network:
+        return 'Connection Problem';
+      case SavedItemsErrorType.server:
+        return 'Server Error';
+      case SavedItemsErrorType.unknown:
+        return 'Something Went Wrong';
+    }
   }
 }
 

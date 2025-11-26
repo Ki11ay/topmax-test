@@ -33,7 +33,8 @@ mixin _$Course {
   int? get isFree => throw _privateConstructorUsedError;
   String? get level => throw _privateConstructorUsedError;
   @JsonKey(name: 'has_certificate')
-  int? get hasCertificate => throw _privateConstructorUsedError;
+  @HasCertificateConverter()
+  bool? get hasCertificate => throw _privateConstructorUsedError;
   @JsonKey(name: 'available_seats')
   int? get availableSeats => throw _privateConstructorUsedError;
   @JsonKey(name: 'company_id')
@@ -84,7 +85,9 @@ abstract class $CourseCopyWith<$Res> {
     String? price,
     @JsonKey(name: 'is_free') int? isFree,
     String? level,
-    @JsonKey(name: 'has_certificate') int? hasCertificate,
+    @JsonKey(name: 'has_certificate')
+    @HasCertificateConverter()
+    bool? hasCertificate,
     @JsonKey(name: 'available_seats') int? availableSeats,
     @JsonKey(name: 'company_id') int? companyId,
     String? status,
@@ -180,7 +183,7 @@ class _$CourseCopyWithImpl<$Res, $Val extends Course>
             hasCertificate: freezed == hasCertificate
                 ? _value.hasCertificate
                 : hasCertificate // ignore: cast_nullable_to_non_nullable
-                      as int?,
+                      as bool?,
             availableSeats: freezed == availableSeats
                 ? _value.availableSeats
                 : availableSeats // ignore: cast_nullable_to_non_nullable
@@ -264,7 +267,9 @@ abstract class _$$CourseImplCopyWith<$Res> implements $CourseCopyWith<$Res> {
     String? price,
     @JsonKey(name: 'is_free') int? isFree,
     String? level,
-    @JsonKey(name: 'has_certificate') int? hasCertificate,
+    @JsonKey(name: 'has_certificate')
+    @HasCertificateConverter()
+    bool? hasCertificate,
     @JsonKey(name: 'available_seats') int? availableSeats,
     @JsonKey(name: 'company_id') int? companyId,
     String? status,
@@ -359,7 +364,7 @@ class __$$CourseImplCopyWithImpl<$Res>
         hasCertificate: freezed == hasCertificate
             ? _value.hasCertificate
             : hasCertificate // ignore: cast_nullable_to_non_nullable
-                  as int?,
+                  as bool?,
         availableSeats: freezed == availableSeats
             ? _value.availableSeats
             : availableSeats // ignore: cast_nullable_to_non_nullable
@@ -437,7 +442,9 @@ class _$CourseImpl implements _Course {
     this.price,
     @JsonKey(name: 'is_free') this.isFree,
     this.level,
-    @JsonKey(name: 'has_certificate') this.hasCertificate,
+    @JsonKey(name: 'has_certificate')
+    @HasCertificateConverter()
+    this.hasCertificate,
     @JsonKey(name: 'available_seats') this.availableSeats,
     @JsonKey(name: 'company_id') this.companyId,
     this.status,
@@ -479,7 +486,8 @@ class _$CourseImpl implements _Course {
   final String? level;
   @override
   @JsonKey(name: 'has_certificate')
-  final int? hasCertificate;
+  @HasCertificateConverter()
+  final bool? hasCertificate;
   @override
   @JsonKey(name: 'available_seats')
   final int? availableSeats;
@@ -637,7 +645,9 @@ abstract class _Course implements Course {
     final String? price,
     @JsonKey(name: 'is_free') final int? isFree,
     final String? level,
-    @JsonKey(name: 'has_certificate') final int? hasCertificate,
+    @JsonKey(name: 'has_certificate')
+    @HasCertificateConverter()
+    final bool? hasCertificate,
     @JsonKey(name: 'available_seats') final int? availableSeats,
     @JsonKey(name: 'company_id') final int? companyId,
     final String? status,
@@ -678,7 +688,8 @@ abstract class _Course implements Course {
   String? get level;
   @override
   @JsonKey(name: 'has_certificate')
-  int? get hasCertificate;
+  @HasCertificateConverter()
+  bool? get hasCertificate;
   @override
   @JsonKey(name: 'available_seats')
   int? get availableSeats;

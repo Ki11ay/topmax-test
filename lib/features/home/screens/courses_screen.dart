@@ -28,6 +28,7 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Courses'),
+        centerTitle: true,
       ),
       body: coursesState.isLoading
           ? const Center(child: CircularProgressIndicator())

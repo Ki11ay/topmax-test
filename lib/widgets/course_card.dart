@@ -122,7 +122,7 @@ class CourseCard extends StatelessWidget {
                         ),
                         const SizedBox(width: AppConstants.paddingMedium),
                       ],
-                      if (course.hasCertificate == 1) ...[
+                      if (course.hasCertificate == true) ...[
                         const Icon(
                           Icons.verified,
                           size: 16,

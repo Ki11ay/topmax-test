@@ -69,7 +69,7 @@ class CoursesNotifier extends StateNotifier<CoursesState> {
       );
       
       final data = response.data['data'];
-      final coursesList = (data['courses'] as List?)
+      final coursesList = (data['data'] as List?)
               ?.map((course) => Course.fromJson(course))
               .toList() ??
           [];

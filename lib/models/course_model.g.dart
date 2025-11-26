@@ -15,7 +15,9 @@ _$CourseImpl _$$CourseImplFromJson(Map<String, dynamic> json) => _$CourseImpl(
   price: json['price'] as String?,
   isFree: (json['is_free'] as num?)?.toInt(),
   level: json['level'] as String?,
-  hasCertificate: (json['has_certificate'] as num?)?.toInt(),
+  hasCertificate: const HasCertificateConverter().fromJson(
+    json['has_certificate'],
+  ),
   availableSeats: (json['available_seats'] as num?)?.toInt(),
   companyId: (json['company_id'] as num?)?.toInt(),
   status: json['status'] as String?,
@@ -45,7 +47,9 @@ Map<String, dynamic> _$$CourseImplToJson(_$CourseImpl instance) =>
       'price': instance.price,
       'is_free': instance.isFree,
       'level': instance.level,
-      'has_certificate': instance.hasCertificate,
+      'has_certificate': const HasCertificateConverter().toJson(
+        instance.hasCertificate,
+      ),
       'available_seats': instance.availableSeats,
       'company_id': instance.companyId,
       'status': instance.status,

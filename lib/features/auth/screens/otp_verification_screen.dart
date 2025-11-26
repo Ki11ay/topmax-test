@@ -70,27 +70,6 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     }
 
     final authNotifier = ref.read(authProvider.notifier);
-    
-    // Show loading indicator
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Row(
-          children: [
-            SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            ),
-            SizedBox(width: 16),
-            Text('Verifying OTP...'),
-          ],
-        ),
-        duration: Duration(seconds: 30),
-      ),
-    );
 
     final success = await authNotifier.verifyOtp(
       phone: widget.phone,
@@ -100,22 +79,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
     if (!mounted) return;
 
-    // Hide loading indicator
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
     if (success) {
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✓ Login successful!'),
-          backgroundColor: AppConstants.successColor,
-          duration: Duration(seconds: 2),
-        ),
-      );
-      
-      // Navigate to home using context.go
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (!mounted) return;
       context.go('/home');
     } else {
       // Clear OTP fields
@@ -124,7 +88,6 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
         _otp = '';
       });
       
-      final error = ref.read(authProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           shape: RoundedRectangleBorder(

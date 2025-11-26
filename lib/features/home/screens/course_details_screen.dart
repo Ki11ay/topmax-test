@@ -66,7 +66,10 @@ class _CourseDetailsScreenState extends ConsumerState<CourseDetailsScreen> {
 
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Course Details')),
+        appBar: AppBar(
+          title: Text(_course?.title ?? 'Course Details'), 
+          centerTitle: true,
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

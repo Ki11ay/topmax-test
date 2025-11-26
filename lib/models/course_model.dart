@@ -3,6 +3,26 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'course_model.freezed.dart';
 part 'course_model.g.dart';
 
+// Custom converter to handle both int and bool for has_certificate
+class HasCertificateConverter implements JsonConverter<bool?, dynamic> {
+  const HasCertificateConverter();
+
+  @override
+  bool? fromJson(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is int) return value == 1;
+    if (value is String) return value == '1' || value.toLowerCase() == 'true';
+    return null;
+  }
+
+  @override
+  dynamic toJson(bool? value) {
+    if (value == null) return null;
+    return value ? 1 : 0;
+  }
+}
+
 @freezed
 class Course with _$Course {
   const factory Course({
@@ -14,7 +34,7 @@ class Course with _$Course {
     String? price,
     @JsonKey(name: 'is_free') int? isFree,
     String? level,
-    @JsonKey(name: 'has_certificate') int? hasCertificate,
+    @JsonKey(name: 'has_certificate') @HasCertificateConverter() bool? hasCertificate,
     @JsonKey(name: 'available_seats') int? availableSeats,
     @JsonKey(name: 'company_id') int? companyId,
     String? status,
