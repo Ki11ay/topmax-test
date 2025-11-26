@@ -29,7 +29,7 @@ class MoreScreen extends StatelessWidget {
                 _buildMenuItem(
                   context,
                   icon: Icons.bookmark,
-                  title: 'Saved Items',
+                  title: 'Bookmarks',
                   onTap: () => context.push('/saved-items'),
                 ),
               ],

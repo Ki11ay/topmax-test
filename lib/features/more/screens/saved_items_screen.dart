@@ -21,6 +21,11 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     
+    // Add listener to rebuild when tab changes
+    _tabController.addListener(() {
+      setState(() {});
+    });
+    
     // Load saved items when screen opens
     Future.microtask(() {
       ref.read(savedItemsProvider.notifier).loadAll();
@@ -33,65 +38,80 @@ class _SavedItemsScreenState extends ConsumerState<SavedItemsScreen>
     super.dispose();
   }
 
+  Widget _buildTab({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+  }) {
+    return Tab(
+      child: Container(
+        height: double.infinity,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : AppConstants.textPrimary,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontFamily: 'DM Sans',
+                fontWeight: FontWeight.w500,
+                color: isSelected ? Colors.white : AppConstants.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final savedItemsState = ref.watch(savedItemsProvider);
 
     return Scaffold(
+      backgroundColor: AppConstants.cardColor,
       appBar: AppBar(
-        title: const Text('Saved Items'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Jobs'),
-                  if (savedItemsState.savedJobs.isNotEmpty)
-                    Container(
-                      margin: const EdgeInsets.only(left: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppConstants.primaryBlue,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '${savedItemsState.savedJobs.length}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+        title: Text('Bookmarks', style: TextStyle(fontSize: 20, fontFamily: 'DM Sans', fontWeight: FontWeight.w600, color: AppConstants.textPrimary),),
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppConstants.unselectedTabColor,
+              borderRadius: BorderRadius.circular(8),
             ),
-            Tab(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Courses'),
-                  if (savedItemsState.savedCourses.isNotEmpty)
-                    Container(
-                      margin: const EdgeInsets.only(left: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppConstants.primaryBlue,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '${savedItemsState.savedCourses.length}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                ],
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: AppConstants.primaryBlue,
+                borderRadius: BorderRadius.circular(8),
               ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              dividerColor: Colors.transparent,
+              labelPadding: EdgeInsets.zero,
+              tabs: [
+                _buildTab(
+                  icon: Icons.cases_outlined,
+                  label: 'Saved Jobs',
+                  isSelected: _tabController.index == 0,
+                ),
+                _buildTab(
+                  icon: Icons.menu_book_outlined,
+                  label: 'Saved Courses',
+                  isSelected: _tabController.index == 1,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       body: savedItemsState.isLoading

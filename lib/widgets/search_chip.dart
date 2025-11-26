@@ -24,12 +24,10 @@ class SearchChip extends StatelessWidget {
           vertical: AppConstants.paddingSmall,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? AppConstants.primaryBlue : AppConstants.lightBlue,
-          borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
+          color: AppConstants.cardColor,
+          borderRadius: BorderRadius.circular(AppConstants.radiusFull),
           border: Border.all(
-            color: isSelected
-                ? AppConstants.primaryBlue
-                : AppConstants.lightBlue,
+            color: AppConstants.searchChipColor,
             width: 1,
           ),
         ),

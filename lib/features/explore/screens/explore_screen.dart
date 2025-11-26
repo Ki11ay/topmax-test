@@ -50,7 +50,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             slivers: [
               // SliverAppBar with search bar
               SliverAppBar(
-                expandedHeight: hasSearchResults ? 178 : 148,
+                expandedHeight: hasSearchResults ? 158 : 120,
                 floating: false,
                 pinned: true,
                 backgroundColor: Colors.transparent,
@@ -65,7 +65,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           vertical: 10,
                         ),
                         child: Container(
-                          margin: const EdgeInsets.only(top: 68),
+                          margin: const EdgeInsets.only(top: 30),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(100),
@@ -116,6 +116,15 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                                   onSubmitted: (_) => _performSearch(),
                                 ),
                               ),
+                              if (hasSearchResults) ...[
+                                IconButton(
+                                  onPressed: () {
+                                    ref.read(searchProvider.notifier).clearSearch();
+                                    _searchController.clear();
+                                  },
+                                  icon: const Icon(Icons.close),
+                                ),
+                              ],
                               Container(
                                 margin: const EdgeInsets.only(right: 4),
                                 child: PopupMenuButton<String>(
@@ -337,7 +346,12 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           // Popular Searches
           Text(
             'Popular Searches',
-            style: Theme.of(context).textTheme.displayMedium,
+            style: TextStyle(
+              fontSize: 17,
+              fontFamily: 'DM Sans',
+              fontWeight: FontWeight.w600,
+              color: AppConstants.textPrimary,
+            ),
           ),
           const SizedBox(height: AppConstants.paddingMedium),
           Wrap(
@@ -393,15 +407,26 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           // Quick Filter
           Text(
             'Quick Filter',
-            style: Theme.of(context).textTheme.displayMedium,
+            style: TextStyle(
+              fontSize: 17,
+              fontFamily: 'DM Sans',
+              fontWeight: FontWeight.w600,
+              color: AppConstants.textPrimary,
+            ),
           ),
           const SizedBox(height: AppConstants.paddingMedium),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              _buildFilterButton('Jobs for People with Blindness'),
-              const SizedBox(height: 8),
-              _buildFilterButton('Jobs for People with Deafness'),
+              SearchChip(label: 'Jobs for People with Blindness', onTap: () {
+                _searchController.text = 'Blindness';
+                _performSearch();
+              }),
+              SearchChip(label: 'Jobs for People with Deafness', onTap: () {
+                _searchController.text = 'Deafness';
+                _performSearch();
+              }),
             ],
           ),
         ],

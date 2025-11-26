@@ -117,18 +117,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppConstants.cardColor,
-      appBar: AppBar(
-        title: const Text(AppConstants.appName),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // Navigate to notifications
-            },
-          ),
-        ],
-      ),
       body: homeState.isLoading
           ? const Center(child: CircularProgressIndicator())
           : homeState.error != null
@@ -162,282 +150,397 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 )
               : RefreshIndicator(
                   onRefresh: _refreshData,
-                  child: SingleChildScrollView(
+                  child: CustomScrollView(
                     controller: _scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Search bar
-                        Padding(
-                          padding:
-                              const EdgeInsets.all(AppConstants.paddingMedium),
-                          child: GestureDetector(
-                            onTap: () {
-                              // Navigate to explore screen
-                              context.go('/explore');
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(
-                                    AppConstants.radiusMedium),
-                                border: Border.all(color: Colors.grey.shade300),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.search,
-                                    color: Colors.grey.shade600,
+                    slivers: [
+                      // SliverAppBar with gradient that collapses on scroll
+                      SliverAppBar(
+                        floating: true,
+                        snap: true,
+                        pinned: true,
+                        expandedHeight: 260.0,
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        flexibleSpace: LayoutBuilder(
+                          builder: (BuildContext context, BoxConstraints constraints) {
+                            // Calculate the collapse ratio (0.0 = fully expanded, 1.0 = fully collapsed)
+                            final double collapseRatio = 
+                                ((constraints.maxHeight - 260.0) / (kToolbarHeight - 260.0))
+                                    .clamp(0.0, 1.0);
+                            final bool isCollapsed = collapseRatio > 0.5;
+                            
+                            return ClipRect(
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  gradient: AppConstants.sliverAppBarGradient,
+                                ),
+                                child: SafeArea(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(AppConstants.paddingMedium),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                      // Logo and notification icon - always visible
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          AnimatedContainer(
+                                            duration: const Duration(milliseconds: 200),
+                                            child: Image.asset(
+                                              'assets/icons/figma.png',
+                                              width: isCollapsed ? 50 : 70,
+                                              height: isCollapsed ? 40 : 58,
+                                            ),
+                                          ),
+                                          Container(
+                                            height: 40,
+                                            width: 40,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: AppConstants.cardColor,
+                                            ),
+                                            child: IconButton(
+                                              onPressed: () {
+                                                // Navigate to notifications
+                                              },
+                                              icon: const Icon(
+                                                Icons.notifications_outlined,
+                                                size: 20,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      // Welcome text and search bar - fade out when collapsing
+                                      if (!isCollapsed) ...[
+                                        const SizedBox(height: AppConstants.paddingMedium),
+                                        Opacity(
+                                          opacity: (1.0 - collapseRatio * 2).clamp(0.0, 1.0),
+                                          child: RichText(
+                                            maxLines: 2,
+                                            text: const TextSpan(
+                                              style: TextStyle(
+                                                fontSize: 28,
+                                                fontFamily: 'DM Sans',
+                                                fontWeight: FontWeight.w500,
+                                                color: AppConstants.textPrimary,
+                                              ),
+                                              children: [
+                                                TextSpan(text: "Let's help you find the perfect "),
+                                                TextSpan(
+                                                  text: "job",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    color: AppConstants.primaryBlue,
+                                                    fontSize: 28,
+                                                    fontFamily: 'DM Sans',
+                                                  ),
+                                                ),
+                                                TextSpan(text: " or "),
+                                                TextSpan(
+                                                  text: "course,",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    color: AppConstants.primaryBlue,
+                                                    fontSize: 28,
+                                                    fontFamily: 'DM Sans',
+                                                  ),
+                                                ),
+                                                TextSpan(text: " you deserve!"),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: AppConstants.paddingMedium),
+                                        Opacity(
+                                          opacity: (1.0 - collapseRatio * 2).clamp(0.0, 1.0),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              context.go('/explore');
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 16,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(
+                                                  AppConstants.radiusFull,
+                                                ),
+                                                border: Border.all(
+                                                  color: Colors.grey.shade300,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.search,
+                                                    color: Colors.grey.shade600,
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Text(
+                                                    'Search for jobs and courses',
+                                                    style: TextStyle(
+                                                      color: Colors.grey.shade600,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    'Search for jobs and courses',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
+                            );
+                          },
                         ),
+                      ),
+                      
+                      // Main content
+                      SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Jobs for Special Abilities Section
+                            _buildSectionHeader(
+                              context,
+                              'Jobs for Special Abilities',
+                              onSeeAll: () {},
+                            ),
+                            if (homeState.disabilityJobs.isEmpty && !homeState.showRecentInDisability) ...[
+                              _buildEmptyStateWithPrompt(
+                                icon: Icons.accessibility_new,
+                                title: 'No Special Ability Jobs Available',
+                                message: 'There are no special ability jobs at the moment.',
+                                promptMessage: 'Would you like to see other available jobs?',
+                                onAccept: () {
+                                  ref.read(homeProvider.notifier).showRecentJobsInDisability(true);
+                                },
+                              ),
+                            ] else if (homeState.disabilityJobs.isEmpty && homeState.showRecentInDisability) ...[
+                              _buildFilterChips(
+                                ['All', 'Deaf', 'Blind'],
+                                _selectedDisabilityFilter,
+                                (filter) {
+                                  setState(() {
+                                    _selectedDisabilityFilter = filter;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: AppConstants.paddingSmall),
+                              SizedBox(
+                                height: 405,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: AppConstants.paddingMedium),
+                                  itemCount: homeState.recentOpenings.length,
+                                  itemBuilder: (context, index) {
+                                    final job = homeState.recentOpenings[index];
+                                    return SpecialAbilitiesJobCard(
+                                      job: job,
+                                      onSave: () {
+                                        ref
+                                            .read(homeProvider.notifier)
+                                            .toggleSaveJob(
+                                              job.id,
+                                              job.isSaved ?? false,
+                                            );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ] else ...[
+                              _buildFilterChips(
+                                ['All', 'Deaf', 'Blind'],
+                                _selectedDisabilityFilter,
+                                (filter) {
+                                  setState(() {
+                                    _selectedDisabilityFilter = filter;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: AppConstants.paddingSmall),
+                              SizedBox(
+                                height: 405, // Increased height for description and badges
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: AppConstants.paddingMedium),
+                                  itemCount: homeState.disabilityJobs.length + 
+                                      (homeState.hasMoreDisabilityJobs ? 1 : 0),
+                                  itemBuilder: (context, index) {
+                                    // Load more button at the end
+                                    if (index == homeState.disabilityJobs.length) {
+                                      return _buildLoadMoreCard(
+                                        onTap: () => ref
+                                            .read(homeProvider.notifier)
+                                            .loadMoreDisabilityJobs(),
+                                        isLoading: homeState.isLoadingMore,
+                                        width: 365,
+                                      );
+                                    }
+                                    
+                                    final job = homeState.disabilityJobs[index];
+                                    return SpecialAbilitiesJobCard(
+                                      job: job,
+                                      onSave: () {
+                                        ref
+                                            .read(homeProvider.notifier)
+                                            .toggleSaveJob(
+                                              job.id,
+                                              job.isSaved ?? false,
+                                            );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: AppConstants.paddingLarge),
 
-                        // Jobs for Special Abilities Section
-                        _buildSectionHeader(
-                          context,
-                          'Jobs for Special Abilities',
-                          onSeeAll: () {},
+                            // Featured Jobs Section
+                            _buildSectionHeader(
+                              context,
+                              'Featured Jobs',
+                              onSeeAll: () {},
+                            ),
+                            if (homeState.featuredJobs.isEmpty && !homeState.showRecentInFeatured) ...[
+                              _buildEmptyStateWithPrompt(
+                                icon: Icons.star_outline,
+                                title: 'No Featured Jobs Available',
+                                message: 'There are no featured jobs at the moment.',
+                                promptMessage: 'Would you like to see other available jobs?',
+                                onAccept: () {
+                                  ref.read(homeProvider.notifier).showRecentJobsInFeatured(true);
+                                },
+                              ),
+                            ] else if (homeState.featuredJobs.isEmpty && homeState.showRecentInFeatured) ...[
+                              SizedBox(
+                                height: 305,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: AppConstants.paddingMedium),
+                                  itemCount: homeState.recentOpenings.length,
+                                  itemBuilder: (context, index) {
+                                    final job = homeState.recentOpenings[index];
+                                    return FeaturedJobsCard(
+                                      job: job,
+                                      onSave: () {
+                                        ref
+                                            .read(homeProvider.notifier)
+                                            .toggleSaveJob(
+                                              job.id,
+                                              job.isSaved ?? false,
+                                            );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ] else ...[
+                              SizedBox(
+                                height: 305,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: AppConstants.paddingMedium),
+                                  itemCount: homeState.featuredJobs.length + 
+                                      (homeState.hasMoreFeaturedJobs ? 1 : 0),
+                                  itemBuilder: (context, index) {
+                                    // Load more button at the end
+                                    if (index == homeState.featuredJobs.length) {
+                                      return _buildLoadMoreCard(
+                                        onTap: () => ref
+                                            .read(homeProvider.notifier)
+                                            .loadMoreFeaturedJobs(),
+                                        isLoading: homeState.isLoadingMore,
+                                      );
+                                    }
+                                    
+                                    final job = homeState.featuredJobs[index];
+                                    return FeaturedJobsCard(
+                                      job: job,
+                                      onSave: () {
+                                        ref
+                                            .read(homeProvider.notifier)
+                                            .toggleSaveJob(
+                                              job.id,
+                                              job.isSaved ?? false,
+                                            );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: AppConstants.paddingLarge),
+
+                            // Recent Openings Section
+                            if (homeState.recentOpenings.isNotEmpty) ...[
+                              _buildSectionHeader(
+                                context,
+                                'Recent Openings',
+                                onSeeAll: () {},
+                              ),
+                              _buildFilterChips(
+                                ['All', 'Full Time', 'Part Time', 'On-site', 'Hybrid', 'Remote'],
+                                _selectedRecentOpeningsFilter,
+                                (filter) {
+                                  setState(() {
+                                    _selectedRecentOpeningsFilter = filter;
+                                  });
+                                },
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: AppConstants.paddingMedium),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: _getFilteredRecentOpenings(homeState).length,
+                                  itemBuilder: (context, index) {
+                                    final job = _getFilteredRecentOpenings(homeState)[index];
+                                    return JobCard(
+                                      job: job,
+                                      onSave: () {
+                                        ref
+                                            .read(homeProvider.notifier)
+                                            .toggleSaveJob(
+                                              job.id,
+                                              job.isSaved ?? false,
+                                            );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+
+                            // Loading more indicator
+                            if (homeState.isLoadingMore)
+                              const Padding(
+                                padding: EdgeInsets.all(AppConstants.paddingLarge),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+
+                            const SizedBox(height: AppConstants.paddingLarge),
+                          ],
                         ),
-                        if (homeState.disabilityJobs.isEmpty && !homeState.showRecentInDisability) ...[
-                          _buildEmptyStateWithPrompt(
-                            icon: Icons.accessibility_new,
-                            title: 'No Special Ability Jobs Available',
-                            message: 'There are no special ability jobs at the moment.',
-                            promptMessage: 'Would you like to see other available jobs?',
-                            onAccept: () {
-                              ref.read(homeProvider.notifier).showRecentJobsInDisability(true);
-                            },
-                          ),
-                        ] else if (homeState.disabilityJobs.isEmpty && homeState.showRecentInDisability) ...[
-                          _buildFilterChips(
-                            ['All', 'Deaf', 'Blind'],
-                            _selectedDisabilityFilter,
-                            (filter) {
-                              setState(() {
-                                _selectedDisabilityFilter = filter;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: AppConstants.paddingSmall),
-                          SizedBox(
-                            height: 405,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: AppConstants.paddingMedium),
-                              itemCount: homeState.recentOpenings.length,
-                              itemBuilder: (context, index) {
-                                final job = homeState.recentOpenings[index];
-                                return SpecialAbilitiesJobCard(
-                                  job: job,
-                                  onSave: () {
-                                    ref
-                                        .read(homeProvider.notifier)
-                                        .toggleSaveJob(
-                                          job.id,
-                                          job.isSaved ?? false,
-                                        );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ] else ...[
-                          _buildFilterChips(
-                            ['All', 'Deaf', 'Blind'],
-                            _selectedDisabilityFilter,
-                            (filter) {
-                              setState(() {
-                                _selectedDisabilityFilter = filter;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: AppConstants.paddingSmall),
-                          SizedBox(
-                            height: 405, // Increased height for description and badges
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: AppConstants.paddingMedium),
-                              itemCount: homeState.disabilityJobs.length + 
-                                  (homeState.hasMoreDisabilityJobs ? 1 : 0),
-                              itemBuilder: (context, index) {
-                                // Load more button at the end
-                                if (index == homeState.disabilityJobs.length) {
-                                  return _buildLoadMoreCard(
-                                    onTap: () => ref
-                                        .read(homeProvider.notifier)
-                                        .loadMoreDisabilityJobs(),
-                                    isLoading: homeState.isLoadingMore,
-                                    width: 365,
-                                  );
-                                }
-                                
-                                final job = homeState.disabilityJobs[index];
-                                return SpecialAbilitiesJobCard(
-                                  job: job,
-                                  onSave: () {
-                                    ref
-                                        .read(homeProvider.notifier)
-                                        .toggleSaveJob(
-                                          job.id,
-                                          job.isSaved ?? false,
-                                        );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: AppConstants.paddingLarge),
-
-                        // Featured Jobs Section
-                        _buildSectionHeader(
-                          context,
-                          'Featured Jobs',
-                          onSeeAll: () {},
-                        ),
-                        if (homeState.featuredJobs.isEmpty && !homeState.showRecentInFeatured) ...[
-                          _buildEmptyStateWithPrompt(
-                            icon: Icons.star_outline,
-                            title: 'No Featured Jobs Available',
-                            message: 'There are no featured jobs at the moment.',
-                            promptMessage: 'Would you like to see other available jobs?',
-                            onAccept: () {
-                              ref.read(homeProvider.notifier).showRecentJobsInFeatured(true);
-                            },
-                          ),
-                        ] else if (homeState.featuredJobs.isEmpty && homeState.showRecentInFeatured) ...[
-                          SizedBox(
-                            height: 305,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: AppConstants.paddingMedium),
-                              itemCount: homeState.recentOpenings.length,
-                              itemBuilder: (context, index) {
-                                final job = homeState.recentOpenings[index];
-                                return FeaturedJobsCard(
-                                  job: job,
-                                  onSave: () {
-                                    ref
-                                        .read(homeProvider.notifier)
-                                        .toggleSaveJob(
-                                          job.id,
-                                          job.isSaved ?? false,
-                                        );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ] else ...[
-                          SizedBox(
-                            height: 305,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: AppConstants.paddingMedium),
-                              itemCount: homeState.featuredJobs.length + 
-                                  (homeState.hasMoreFeaturedJobs ? 1 : 0),
-                              itemBuilder: (context, index) {
-                                // Load more button at the end
-                                if (index == homeState.featuredJobs.length) {
-                                  return _buildLoadMoreCard(
-                                    onTap: () => ref
-                                        .read(homeProvider.notifier)
-                                        .loadMoreFeaturedJobs(),
-                                    isLoading: homeState.isLoadingMore,
-                                  );
-                                }
-                                
-                                final job = homeState.featuredJobs[index];
-                                return FeaturedJobsCard(
-                                  job: job,
-                                  onSave: () {
-                                    ref
-                                        .read(homeProvider.notifier)
-                                        .toggleSaveJob(
-                                          job.id,
-                                          job.isSaved ?? false,
-                                        );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: AppConstants.paddingLarge),
-
-                        // Recent Openings Section
-                        if (homeState.recentOpenings.isNotEmpty) ...[
-                          _buildSectionHeader(
-                            context,
-                            'Recent Openings',
-                            onSeeAll: () {},
-                          ),
-                          _buildFilterChips(
-                            ['All', 'Full Time', 'Part Time', 'On-site', 'Hybrid', 'Remote'],
-                            _selectedRecentOpeningsFilter,
-                            (filter) {
-                              setState(() {
-                                _selectedRecentOpeningsFilter = filter;
-                              });
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: AppConstants.paddingMedium),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: _getFilteredRecentOpenings(homeState).length,
-                              itemBuilder: (context, index) {
-                                final job = _getFilteredRecentOpenings(homeState)[index];
-                                return JobCard(
-                                  job: job,
-                                  onSave: () {
-                                    ref
-                                        .read(homeProvider.notifier)
-                                        .toggleSaveJob(
-                                          job.id,
-                                          job.isSaved ?? false,
-                                        );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-
-                        // Loading more indicator
-                        if (homeState.isLoadingMore)
-                          const Padding(
-                            padding: EdgeInsets.all(AppConstants.paddingLarge),
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-
-                        const SizedBox(height: AppConstants.paddingLarge),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
     );

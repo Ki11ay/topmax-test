@@ -7,7 +7,9 @@ class AppConstants {
   static const Color darkBlue = Color(0xFF1976D2);
   static const Color jobCardColor = Color(0xFFF1F4FD);
   static const Color lightBlue = Color(0xFFE3F2FD);
+  static const Color searchChipColor = Color(0xFFE3E6EB);
   static const Color backgroundColor = Color(0xFFF4F7FF);
+  static const Color unselectedTabColor = Color(0xFFF9F9F9);
   static const Color cardColor = Colors.white;
   static const Color textPrimary = Color(0xFF111111);
   static const Color textSecondary = Color(0xFF4D4D4D);
