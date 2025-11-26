@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../core/constants/api_constants.dart';
 import 'storage_service.dart';
+import 'session_manager.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -60,7 +61,9 @@ class ApiService {
           if (error.response?.statusCode == 401) {
             print('🔒 Unauthorized - Token expired or invalid');
             await StorageService.clearAll();
-            // Note: Navigation will be handled by router guard
+            SessionManager().notifySessionExpired(
+              'Your session has expired. Please log in again to continue.'
+            );
           }
           
           // Handle 500 errors that indicate null user (token expired but not caught as 401)
@@ -71,6 +74,9 @@ class ApiService {
                 errorData.contains('Call to a member function')) {
               print('🔒 Session expired - User is null on backend');
               await StorageService.clearAll();
+              SessionManager().notifySessionExpired(
+                'Your session has expired. Please log in again to continue.'
+              );
             }
           }
           

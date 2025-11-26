@@ -149,14 +149,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // Logout
   Future<void> logout() async {
-    state = state.copyWith(isLoading: true);
     try {
       await _authService.logout();
-      state = AuthState();
-    } catch (e) {
-      state = state.copyWith(
+      // Reset to initial state (not authenticated)
+      state = AuthState(
         isLoading: false,
-        error: e.toString(),
+        isAuthenticated: false,
+        user: null,
+        error: null,
+      );
+    } catch (e) {
+      // Even if logout fails, reset the state
+      state = AuthState(
+        isLoading: false,
+        isAuthenticated: false,
+        user: null,
+        error: null,
       );
     }
   }

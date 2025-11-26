@@ -5,6 +5,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../state/home_provider.dart';
 import '../../../widgets/job_card.dart';
 import '../../../widgets/featured_jobs_card.dart';
+import '../../../widgets/special_abilities_job_card.dart';
 import '../../../models/job_model.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -230,8 +231,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             },
                           ),
                           const SizedBox(height: AppConstants.paddingSmall),
-                          SizedBox(
-                            height: 200,
+                          SizedBox( // Increased height for description
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               padding: const EdgeInsets.symmetric(
@@ -246,26 +246,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         .read(homeProvider.notifier)
                                         .loadMoreDisabilityJobs(),
                                     isLoading: homeState.isLoadingMore,
-                                    width: 320,
+                                    width: 365,
                                   );
                                 }
                                 
                                 final job = homeState.disabilityJobs[index];
-                                return Container(
-                                  width: 320,
-                                  margin: const EdgeInsets.only(
-                                      right: AppConstants.paddingMedium),
-                                  child: JobCard(
-                                    job: job,
-                                    onSave: () {
-                                      ref
-                                          .read(homeProvider.notifier)
-                                          .toggleSaveJob(
-                                            job.id,
-                                            job.isSaved ?? false,
-                                          );
-                                    },
-                                  ),
+                                return SpecialAbilitiesJobCard(
+                                  job: job,
+                                  onSave: () {
+                                    ref
+                                        .read(homeProvider.notifier)
+                                        .toggleSaveJob(
+                                          job.id,
+                                          job.isSaved ?? false,
+                                        );
+                                  },
                                 );
                               },
                             ),
