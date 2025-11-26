@@ -35,6 +35,7 @@ class Job with _$Job {
     @JsonKey(name: 'company_logo') String? companyLogo,
     @JsonKey(name: 'formatted_salary') String? formattedSalary,
     @JsonKey(name: 'active_since') String? activeSince,
+    @JsonKey(name: 'disability_other') String? disabilityOther,
     Company? company,
   }) = _Job;
 

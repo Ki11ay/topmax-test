@@ -17,7 +17,7 @@ class SpecialAbilitiesJobCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 365, // Fixed width
-      margin: const EdgeInsets.only(right: AppConstants.paddingMedium),
+      margin: const EdgeInsets.only(right: AppConstants.paddingLarge),
       decoration: BoxDecoration(
         color: AppConstants.jobCardColor, // Light purple background
         borderRadius: BorderRadius.circular(AppConstants.radiusExtraExtraLarge),
@@ -34,34 +34,63 @@ class SpecialAbilitiesJobCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min, // Dynamic height
             children: [
-              // Top row with badge and bookmark
+              // Top row with badges (column) and bookmark
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: job.isUrgent == true
-                          ? AppConstants.urgentColor
-                          : job.isMultipleHires == true
-                              ? AppConstants.multipleHiresColor
-                              : AppConstants.newJobColor,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Text(
-                      job.isUrgent == true
-                          ? 'Urgent'
-                          : job.isMultipleHires == true
-                              ? 'Hiring Multiple Candidates'
-                              : 'New',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontFamily: 'DM Sans',
-                        fontWeight: FontWeight.w500,
-                        color: AppConstants.textPrimary,
+                  // Badges column
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Special Abilities badge - always show for this card type
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFCCE5FF), // Light blue
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                              job.disabilityOther?.isNotEmpty == true 
+                                  ? job.disabilityOther! 
+                                  : 'Special Abilities',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontFamily: 'DM Sans',
+                                fontWeight: FontWeight.w500,
+                                color: AppConstants.textPrimary,
+                              ),
+                            ),
                       ),
-                    ),
+                      const SizedBox(height: 8),
+                      // Regular badge (Urgent/Multiple Hires/New)
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: job.isUrgent == true
+                              ? AppConstants.urgentColor
+                              : job.isMultipleHires == true
+                                  ? AppConstants.multipleHiresColor
+                                  : AppConstants.newJobColor,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          job.isUrgent == true
+                              ? 'Urgent'
+                              : job.isMultipleHires == true
+                                  ? 'Hiring Multiple Candidates'
+                                  : 'New',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'DM Sans',
+                            fontWeight: FontWeight.w500,
+                            color: AppConstants.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  // Save button
                   IconButton(
                     icon: Image.asset(
                       width: 20,
@@ -76,7 +105,7 @@ class SpecialAbilitiesJobCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: AppConstants.paddingSmall),
+              const SizedBox(height: AppConstants.paddingMedium),
               // Job title
               Text(
                 job.jobTitle,
@@ -98,7 +127,7 @@ class SpecialAbilitiesJobCard extends StatelessWidget {
                     fontSize: 14,
                     fontFamily: 'DM Sans',
                     fontWeight: FontWeight.w400,
-                    color: AppConstants.textSecondary,
+                    color: AppConstants.textTertiary,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

@@ -36,6 +36,7 @@ _$JobImpl _$$JobImplFromJson(Map<String, dynamic> json) => _$JobImpl(
   companyLogo: json['company_logo'] as String?,
   formattedSalary: json['formatted_salary'] as String?,
   activeSince: json['active_since'] as String?,
+  disabilityOther: json['disability_other'] as String?,
   company: json['company'] == null
       ? null
       : Company.fromJson(json['company'] as Map<String, dynamic>),
@@ -71,6 +72,7 @@ Map<String, dynamic> _$$JobImplToJson(_$JobImpl instance) => <String, dynamic>{
   'company_logo': instance.companyLogo,
   'formatted_salary': instance.formattedSalary,
   'active_since': instance.activeSince,
+  'disability_other': instance.disabilityOther,
   'company': instance.company,
 };
 

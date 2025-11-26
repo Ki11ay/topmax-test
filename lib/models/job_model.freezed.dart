@@ -72,6 +72,8 @@ mixin _$Job {
   String? get formattedSalary => throw _privateConstructorUsedError;
   @JsonKey(name: 'active_since')
   String? get activeSince => throw _privateConstructorUsedError;
+  @JsonKey(name: 'disability_other')
+  String? get disabilityOther => throw _privateConstructorUsedError;
   Company? get company => throw _privateConstructorUsedError;
 
   /// Serializes this Job to a JSON map.
@@ -118,6 +120,7 @@ abstract class $JobCopyWith<$Res> {
     @JsonKey(name: 'company_logo') String? companyLogo,
     @JsonKey(name: 'formatted_salary') String? formattedSalary,
     @JsonKey(name: 'active_since') String? activeSince,
+    @JsonKey(name: 'disability_other') String? disabilityOther,
     Company? company,
   });
 
@@ -167,6 +170,7 @@ class _$JobCopyWithImpl<$Res, $Val extends Job> implements $JobCopyWith<$Res> {
     Object? companyLogo = freezed,
     Object? formattedSalary = freezed,
     Object? activeSince = freezed,
+    Object? disabilityOther = freezed,
     Object? company = freezed,
   }) {
     return _then(
@@ -287,6 +291,10 @@ class _$JobCopyWithImpl<$Res, $Val extends Job> implements $JobCopyWith<$Res> {
                 ? _value.activeSince
                 : activeSince // ignore: cast_nullable_to_non_nullable
                       as String?,
+            disabilityOther: freezed == disabilityOther
+                ? _value.disabilityOther
+                : disabilityOther // ignore: cast_nullable_to_non_nullable
+                      as String?,
             company: freezed == company
                 ? _value.company
                 : company // ignore: cast_nullable_to_non_nullable
@@ -347,6 +355,7 @@ abstract class _$$JobImplCopyWith<$Res> implements $JobCopyWith<$Res> {
     @JsonKey(name: 'company_logo') String? companyLogo,
     @JsonKey(name: 'formatted_salary') String? formattedSalary,
     @JsonKey(name: 'active_since') String? activeSince,
+    @JsonKey(name: 'disability_other') String? disabilityOther,
     Company? company,
   });
 
@@ -394,6 +403,7 @@ class __$$JobImplCopyWithImpl<$Res> extends _$JobCopyWithImpl<$Res, _$JobImpl>
     Object? companyLogo = freezed,
     Object? formattedSalary = freezed,
     Object? activeSince = freezed,
+    Object? disabilityOther = freezed,
     Object? company = freezed,
   }) {
     return _then(
@@ -514,6 +524,10 @@ class __$$JobImplCopyWithImpl<$Res> extends _$JobCopyWithImpl<$Res, _$JobImpl>
             ? _value.activeSince
             : activeSince // ignore: cast_nullable_to_non_nullable
                   as String?,
+        disabilityOther: freezed == disabilityOther
+            ? _value.disabilityOther
+            : disabilityOther // ignore: cast_nullable_to_non_nullable
+                  as String?,
         company: freezed == company
             ? _value.company
             : company // ignore: cast_nullable_to_non_nullable
@@ -556,6 +570,7 @@ class _$JobImpl implements _Job {
     @JsonKey(name: 'company_logo') this.companyLogo,
     @JsonKey(name: 'formatted_salary') this.formattedSalary,
     @JsonKey(name: 'active_since') this.activeSince,
+    @JsonKey(name: 'disability_other') this.disabilityOther,
     this.company,
   });
 
@@ -643,11 +658,14 @@ class _$JobImpl implements _Job {
   @JsonKey(name: 'active_since')
   final String? activeSince;
   @override
+  @JsonKey(name: 'disability_other')
+  final String? disabilityOther;
+  @override
   final Company? company;
 
   @override
   String toString() {
-    return 'Job(id: $id, companyId: $companyId, jobTitle: $jobTitle, jobDescription: $jobDescription, minSalary: $minSalary, maxSalary: $maxSalary, salaryToBeDiscussed: $salaryToBeDiscussed, experienceLevel: $experienceLevel, education: $education, jobType: $jobType, locationPriority: $locationPriority, officeLocation: $officeLocation, isMultipleHires: $isMultipleHires, isUrgent: $isUrgent, isSaved: $isSaved, isFeatured: $isFeatured, status: $status, createdAt: $createdAt, responsibilities: $responsibilities, requirements: $requirements, qualifications: $qualifications, benefits: $benefits, yearsOfExperience: $yearsOfExperience, cityId: $cityId, hasApplied: $hasApplied, companyName: $companyName, companyLogo: $companyLogo, formattedSalary: $formattedSalary, activeSince: $activeSince, company: $company)';
+    return 'Job(id: $id, companyId: $companyId, jobTitle: $jobTitle, jobDescription: $jobDescription, minSalary: $minSalary, maxSalary: $maxSalary, salaryToBeDiscussed: $salaryToBeDiscussed, experienceLevel: $experienceLevel, education: $education, jobType: $jobType, locationPriority: $locationPriority, officeLocation: $officeLocation, isMultipleHires: $isMultipleHires, isUrgent: $isUrgent, isSaved: $isSaved, isFeatured: $isFeatured, status: $status, createdAt: $createdAt, responsibilities: $responsibilities, requirements: $requirements, qualifications: $qualifications, benefits: $benefits, yearsOfExperience: $yearsOfExperience, cityId: $cityId, hasApplied: $hasApplied, companyName: $companyName, companyLogo: $companyLogo, formattedSalary: $formattedSalary, activeSince: $activeSince, disabilityOther: $disabilityOther, company: $company)';
   }
 
   @override
@@ -708,6 +726,8 @@ class _$JobImpl implements _Job {
                 other.formattedSalary == formattedSalary) &&
             (identical(other.activeSince, activeSince) ||
                 other.activeSince == activeSince) &&
+            (identical(other.disabilityOther, disabilityOther) ||
+                other.disabilityOther == disabilityOther) &&
             (identical(other.company, company) || other.company == company));
   }
 
@@ -744,6 +764,7 @@ class _$JobImpl implements _Job {
     companyLogo,
     formattedSalary,
     activeSince,
+    disabilityOther,
     company,
   ]);
 
@@ -792,6 +813,7 @@ abstract class _Job implements Job {
     @JsonKey(name: 'company_logo') final String? companyLogo,
     @JsonKey(name: 'formatted_salary') final String? formattedSalary,
     @JsonKey(name: 'active_since') final String? activeSince,
+    @JsonKey(name: 'disability_other') final String? disabilityOther,
     final Company? company,
   }) = _$JobImpl;
 
@@ -877,6 +899,9 @@ abstract class _Job implements Job {
   @override
   @JsonKey(name: 'active_since')
   String? get activeSince;
+  @override
+  @JsonKey(name: 'disability_other')
+  String? get disabilityOther;
   @override
   Company? get company;
 
