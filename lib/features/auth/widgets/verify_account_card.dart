@@ -28,18 +28,23 @@ class VerifyAccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 40,
-      ),
-      width: 400,
-      height: 390,
-      decoration: BoxDecoration(
-        color: AppConstants.cardColor,
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Column(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 40,
+        ),
+        width: 400,
+        height: 390,
+        decoration: BoxDecoration(
+          color: AppConstants.cardColor,
+          borderRadius: BorderRadius.circular(40),
+        ),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -138,6 +143,7 @@ class VerifyAccountCard extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }
